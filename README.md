@@ -2,7 +2,6 @@
 API for data scraping
 
 ## Create a Spider
----
 To create a new Spider go to the `news_scraper` directory:
 ```
 $ cd news_scraper
