@@ -23,19 +23,12 @@ class DataBasePipeline(object):
         self.host = host
 
     def process_item(self, item, spider):
-        sql = 'INSERT INTO articles(title, overview, url, image_url, body, pub_date) VALUES (%s, %s, %s, %s, %s, %s)'
+        if item.get('badge_url'):
+            sql = 'INSERT INTO courses(title, badge_url, url, overview) VALUES ("{title}", "{badge_url}", "{url}", "{overview}")'.format(**item)
+        else:
+            sql = 'INSERT INTO articles(title, overview, url, image_url, body, pub_date) VALUES ("{title}", "{overview}", "{url}", "{image_url}", "{body}", "{pub_date}")'.format(**item)
         try:
-            self.cursor.execute(
-                    sql,
-                    (
-                        item.get('title'),
-                        item.get('overview'),
-                        item.get('url'),
-                        item.get('image_url'),
-                        item.get('body'),
-                        item.get('pub_date')
-                        )
-                    )
+            self.cursor.execute(sql)
             self.conn.commit()
         except Exception as e:
             print(e)

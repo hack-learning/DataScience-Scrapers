@@ -43,6 +43,7 @@ class InfoworldSpider(scrapy.Spider):
         yield {
                 'title': title,
                 'overview': overview,
+                'image_url': image_url,
                 'url': url,
                 'body': body,
                 'pub_date': pub_date
