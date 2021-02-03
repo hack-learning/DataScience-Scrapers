@@ -23,11 +23,16 @@ class DataBasePipeline(object):
         self.host = host
 
     def process_item(self, item, spider):
+        
         if item.get('badge_url'):
+            self.cursor.execute('CREATE TABLE IF NOT EXISTS courses (id INTEGER PRIMARY_KEY, title VARCHAR(100), badge_url VARCHAR(255), overview TEXT)')
             sql = 'INSERT INTO courses(title, badge_url, url, overview) VALUES ("{title}", "{badge_url}", "{url}", "{overview}")'.format(**item)
         else:
+            self.cursor.execute('CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY_KEY, title VARCHAR(100), overview TEXT, url VARCHAR(255),\
+            image_url VARCHAR(255), body TEXT, pub_date DATE)')
             sql = 'INSERT INTO articles(title, overview, url, image_url, body, pub_date) VALUES ("{title}", "{overview}", "{url}", "{image_url}", "{body}", "{pub_date}")'.format(**item)
         try:
+            
             self.cursor.execute(sql)
             self.conn.commit()
         except Exception as e:
