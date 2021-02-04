@@ -25,12 +25,19 @@ class DataBasePipeline(object):
     def process_item(self, item, spider):
         
         if item.get('badge_url'):
-            self.cursor.execute('CREATE TABLE IF NOT EXISTS courses (id INTEGER PRIMARY_KEY, title VARCHAR(100), badge_url VARCHAR(255), overview TEXT)')
+            
+            self.cursor.execute('CREATE TABLE IF NOT EXISTS courses (id INTEGER PRIMARY KEY AUTO_INCREMENT,title VARCHAR(100), badge_url VARCHAR(255) UNIQUE, overview TEXT)')
             sql = 'INSERT INTO courses(title, badge_url, url, overview) VALUES ("{title}", "{badge_url}", "{url}", "{overview}")'.format(**item)
         else:
-            self.cursor.execute('CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY_KEY, title VARCHAR(100), overview TEXT, url VARCHAR(255),\
+
+            self.cursor.execute(f'SELECT id FROM domains WHERE domain_name="{spider.allowed_domains[0]}"')
+            id_domains = self.cursor.fetchall()
+            id_domain = id_domains[0][0]
+            
+            self.cursor.execute('CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY KEY AUTO_INCREMENT,\
+                 id_domain INTEGER, FOREIGN KEY (id_domain) REFERENCES domains (id), title VARCHAR(100), overview TEXT, url VARCHAR(255) UNIQUE,\
             image_url VARCHAR(255), body TEXT, pub_date DATE)')
-            sql = 'INSERT INTO articles(title, overview, url, image_url, body, pub_date) VALUES ("{title}", "{overview}", "{url}", "{image_url}", "{body}", "{pub_date}")'.format(**item)
+            sql = 'INSERT INTO articles(id_domain, title, overview, url, image_url, body, pub_date) VALUES ("{id_domain}","{title}", "{overview}", "{url}", "{image_url}", "{body}", "{pub_date}")'.format(**item, id_domain=id_domain)
         try:
             
             self.cursor.execute(sql)

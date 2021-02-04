@@ -15,6 +15,7 @@ class MozillaDev(scrapy.Spider):
         'https://hacks.mozilla.org/articles/'
 
     ]
+    allowed_domains = ['mozilla.org']
     custom_settings = {
         'FEED_URI':'articles.json',
         'FEED_FORMAT': 'json',
