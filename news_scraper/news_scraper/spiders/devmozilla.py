@@ -1,4 +1,6 @@
 import scrapy
+import re
+from datetime import datetime
 
 #articles_titles = response.xpath('//h3[@class="post__title"]/a/text()').getall()
 #Articles_url = response.xpath('//h3[@class="post__title"]/a/@href').getall()
@@ -26,12 +28,19 @@ class MozillaDev(scrapy.Spider):
     def parse_articles_body(self, response, **kwargs):
         body= response.xpath('//article[@class="post"]//*[self::p or self::a or self::h2 or self::span]/text()').getall()
         body = ''.join(body)
-        date = response.xpath('//abbr[@class="published"]/text()').get()
+        get_date = response.xpath('//abbr[@class="published"]/text()').get()
+        get_date = re.sub('[^A-Za-z0-9]+', ' ', get_date).strip()
+        
+        #Transform the string into a datetime object, then into a date 
+        #and then into a string
+        final_date = str(datetime.strptime(get_date,'%B %d %Y').date())
+
         yield { 'title': kwargs['title'],
                 'overview': kwargs['overviews'],
                 'url':kwargs['urls'], 
+                'image_url': None,
                 'body':body,
-                'pub_date':date
+                'pub_date':final_date
             } 
 
 

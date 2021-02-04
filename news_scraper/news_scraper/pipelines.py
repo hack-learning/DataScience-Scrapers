@@ -26,7 +26,8 @@ class DataBasePipeline(object):
         
         if item.get('badge_url'):
             
-            self.cursor.execute('CREATE TABLE IF NOT EXISTS courses (id INTEGER PRIMARY KEY AUTO_INCREMENT,title VARCHAR(100), badge_url VARCHAR(255) UNIQUE, overview TEXT)')
+            self.cursor.execute('CREATE TABLE IF NOT EXISTS courses (id INTEGER PRIMARY KEY AUTO_INCREMENT,title VARCHAR(100), \
+                                badge_url VARCHAR(255) UNIQUE, url VARCHAR(255), overview TEXT)')
             sql = 'INSERT INTO courses(title, badge_url, url, overview) VALUES ("{title}", "{badge_url}", "{url}", "{overview}")'.format(**item)
         else:
 
