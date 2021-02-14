@@ -43,6 +43,8 @@ class DataBasePipeline(object):
             
             self.cursor.execute(sql)
             self.conn.commit()
+        except mysql.connector.IntegrityError as err:
+            print('Article already in the DataBase.')
         except Exception as e:
             print(e)
         return item
