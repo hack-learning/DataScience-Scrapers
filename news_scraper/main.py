@@ -14,11 +14,7 @@ def hello_pubsub(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    # process = CrawlerProcess(get_project_settings())
-    # process.crawl(InfoworldSpider)
-    # process.crawl(MozillaDev)
-    # process.start()
-
     os.system('python run_spyder_infoworld.py')
+    os.system('python run_spyder_devmozilla.py')
     
     return 'ok'
