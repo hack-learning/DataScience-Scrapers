@@ -11,7 +11,6 @@ class InfoworldSpider(scrapy.Spider):
     custom_settings = {
             'DEPTH_LIMIT': 5,
             'FEED_FORMAT': 'json',
-            'FEED_URI': 'infoworld_news.json',
             'FEED_EXPORT_ENCODING': 'utf-8'
             }
 

@@ -16,11 +16,12 @@ class NewsScraperPipeline:
 
 
 class DataBasePipeline(object):
-    def __init__(self, db, user, passwd, host):
+    def __init__(self, db, user, passwd, host,port):
         self.db = db
         self.user = user
         self.passwd = passwd
         self.host = host
+        self.port = port
 
     def process_item(self, item, spider):
         
@@ -30,14 +31,25 @@ class DataBasePipeline(object):
                                 badge_url VARCHAR(255) UNIQUE, url VARCHAR(255), overview TEXT)')
             sql = 'INSERT INTO courses(title, badge_url, url, overview) VALUES ("{title}", "{badge_url}", "{url}", "{overview}")'.format(**item)
         else:
-
-            self.cursor.execute(f'SELECT id FROM domains WHERE domain_name="{spider.allowed_domains[0]}"')
+            
+            #domain_query
+            print(spider.allowed_domains[0]) 
+            print(f'{spider.allowed_domains[0]}')
+            query_1 = "SELECT id FROM domains WHERE domain_name='"+spider.allowed_domains[0]+"'"            
+            print(query_1)
+            # self.cursor.execute(f'SELECT id FROM domains \
+            #      WHERE domain_name={spider.allowed_domains[0]}')
+            self.cursor.execute(query_1)
             id_domains = self.cursor.fetchall()
+            print(id_domains)
             id_domain = id_domains[0][0]
             
-            self.cursor.execute('CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY KEY AUTO_INCREMENT,\
-                 id_domain INTEGER, FOREIGN KEY (id_domain) REFERENCES domains (id), title VARCHAR(100), overview TEXT, url VARCHAR(255) UNIQUE,\
-            image_url VARCHAR(255), body TEXT, pub_date DATE)')
+            self.cursor.execute('CREATE TABLE IF NOT EXISTS \
+                articles (id INTEGER PRIMARY KEY AUTO_INCREMENT,\
+                id_domain INTEGER, FOREIGN KEY (id_domain) \
+                REFERENCES domains (id), title VARCHAR(100), overview TEXT,\
+                url VARCHAR(255) UNIQUE,\
+                image_url VARCHAR(255), body TEXT, pub_date DATE)')
             sql = 'INSERT INTO articles(id_domain, title, overview, url, image_url, body, pub_date) VALUES ("{id_domain}","{title}", "{overview}", "{url}", "{image_url}", "{body}", "{pub_date}")'.format(**item, id_domain=id_domain)
         try:
             
@@ -57,9 +69,11 @@ class DataBasePipeline(object):
                 passwd=self.passwd,
                 charset='utf8',
                 use_unicode=True,
+                port=self.port,
                 auth_plugin='mysql_native_password'
                 )
         self.cursor = self.conn.cursor()
+        print('Connection succesfull')
 
     def close_spider(self, spider):
         self.conn.close()
@@ -73,5 +87,6 @@ class DataBasePipeline(object):
         passwd = db_settings['passwd']
         user = db_settings['user']
         host = db_settings['host']
-        return cls(db, user, passwd, host)
+        port = db_settings['port']
+        return cls(db, user, passwd, host,port)
 

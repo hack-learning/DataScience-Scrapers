@@ -19,7 +19,7 @@ class MozillaDev(scrapy.Spider):
     ]
     allowed_domains = ['mozilla.org']
     custom_settings = {
-        'FEED_URI':'articles.json',
+        
         'FEED_FORMAT': 'json',
         'FEED_EXPORT_ENCODING': 'utf-8',
         'DEPTH_LIMIT': 5

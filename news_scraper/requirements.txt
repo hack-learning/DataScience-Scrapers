@@ -11,7 +11,7 @@ itemadapter==0.2.0
 itemloaders==1.0.4
 jmespath==0.10.0
 lxml==4.6.2
-mysql-connector==2.2.9
+mysql-connector-python
 parsel==1.6.0
 Protego==0.1.16
 pyasn1==0.4.8

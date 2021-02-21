@@ -94,5 +94,6 @@ DB_SETTINGS = {
         'host': os.getenv('MYSQL_HOST'),
         'user': os.getenv('MYSQL_USER'),
         'passwd': os.getenv('MYSQL_PASSWD'),
-        'db': os.getenv('MYSQL_DB')
+        'db': os.getenv('MYSQL_DB'),
+        'port': os.getenv('MYSQL_PORT')
         }
