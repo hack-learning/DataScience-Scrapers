@@ -33,24 +33,22 @@ class DataBasePipeline(object):
         else:
             
             #domain_query
-            print(spider.allowed_domains[0]) 
-            print(f'{spider.allowed_domains[0]}')
             query_1 = "SELECT id FROM domains WHERE domain_name='"+spider.allowed_domains[0]+"'"            
-            print(query_1)
-            # self.cursor.execute(f'SELECT id FROM domains \
-            #      WHERE domain_name={spider.allowed_domains[0]}')
             self.cursor.execute(query_1)
             id_domains = self.cursor.fetchall()
-            print(id_domains)
-            id_domain = id_domains[0][0]
+            id_domain = id_domains[0][0]            
             
+            #Insert scraped information to the tables
             self.cursor.execute('CREATE TABLE IF NOT EXISTS \
                 articles (id INTEGER PRIMARY KEY AUTO_INCREMENT,\
                 id_domain INTEGER, FOREIGN KEY (id_domain) \
                 REFERENCES domains (id), title VARCHAR(100), overview TEXT,\
                 url VARCHAR(255) UNIQUE,\
                 image_url VARCHAR(255), body TEXT, pub_date DATE)')
-            sql = 'INSERT INTO articles(id_domain, title, overview, url, image_url, body, pub_date) VALUES ("{id_domain}","{title}", "{overview}", "{url}", "{image_url}", "{body}", "{pub_date}")'.format(**item, id_domain=id_domain)
+            sql = "INSERT INTO articles(\
+                id_domain, title, overview, url, image_url, body, pub_date) VALUES \
+                ({id_domain},'{title}', '{overview}', '{url}', '{image_url}', '{body}',\
+                 '{pub_date}')".format(**item, id_domain=id_domain)
         try:
             
             self.cursor.execute(sql)
