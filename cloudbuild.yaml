@@ -1,5 +1,7 @@
 steps:
   
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['functions', 'deploy', 'multiplescrapers', '--trigger-topic=update-db', '--runtime=python38', '--entry-point=hello_pubsub']
-    dir: 'https://source.developers.google.com/projects/scrapingnlp/repos/github_hack-learning_datascience-scrapers/moveable-aliases/main'
+    args: ['functions', 'deploy', 'multiplescrapers', '--trigger-topic=update-db', 
+    '--runtime=python38', '--entry-point=hello_pubsub',
+    '--source=https://source.developers.google.com/projects/scrapingnlp/repos/github_hack-learning_datascience-scrapers']
+   
