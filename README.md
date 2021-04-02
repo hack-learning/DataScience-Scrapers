@@ -1,6 +1,6 @@
 # Complete Data Extraction-Loading Pipeline Including Continuous Deployment
 
-![alt text](https://drive.google.com/file/d/1llXvr17dW_N8WzrGRMVT_o2NRrjeL9qN/view?usp=sharing)
+![image](https://drive.google.com/uc?export=view&id=1llXvr17dW_N8WzrGRMVT_o2NRrjeL9qN)
 
 Extracting information is one of the most common duties as a Data Scientist. However a vast majority struggles deploying their pipelines. We show you here, how you can do both tasks with some useful tools.
 
