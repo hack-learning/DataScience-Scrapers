@@ -18,3 +18,10 @@ The created scraper extracts up to date articles about technology from important
 After that the information is sent to a ***Digital Ocean MySql Managed Database*** to be analyzed later by a Natural Language Processing API. 
 
 Finally we used ***Cloud Build and Source Repos from Google Cloud*** to automates the cloud function deployment process every time you push some change to the repository.
+
+## Prerequisites
+* Create a Google Cloud account.
+* Enable your billing account. 
+* Enable Compute Engine, Cloud Functions, Cloud Scheduler and Cloud Pub/Sub APIs.
+* Create a Digital Ocean account.
+* Create an SQL Managed Database.
