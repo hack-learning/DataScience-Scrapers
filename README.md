@@ -19,7 +19,7 @@ After that the information is sent to a ***Digital Ocean MySql Managed Database*
 
 Finally we used ***Cloud Build and Source Repos from Google Cloud*** to automates the cloud function deployment process every time you push some change to the repository.
 
-## Prerequisites
+# Prerequisites
 * Create a Google Cloud account.
 * Enable your billing account. 
 * Enable Compute Engine, Cloud Functions, Cloud Scheduler and Cloud Pub/Sub APIs.
