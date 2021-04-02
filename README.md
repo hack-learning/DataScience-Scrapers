@@ -1,6 +1,6 @@
 # Complete Data Extraction-Loading Pipeline Including Continuous Deployment
 <p>
-    <img src="https://drive.google.com/uc?export=view&id=1llXvr17dW_N8WzrGRMVT_o2NRrjeL9qN" width="220" height="240" />
+    <img src="https://drive.google.com/uc?export=view&id=1llXvr17dW_N8WzrGRMVT_o2NRrjeL9qN" />
 </p>
 ![image](https://drive.google.com/uc?export=view&id=1llXvr17dW_N8WzrGRMVT_o2NRrjeL9qN)
 
