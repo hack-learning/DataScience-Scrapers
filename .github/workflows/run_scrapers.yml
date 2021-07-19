@@ -1,7 +1,7 @@
 name: Daily Scraping
 on:
   schedule:
-    - cron: '21 1 * * *'
+    - cron: '23 13 * * *'
 jobs:
   run-scrapers:
     runs-on: ubuntu-latest
