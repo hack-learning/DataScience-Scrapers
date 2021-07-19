@@ -1,7 +1,8 @@
 name: Daily Scraping
 on:
   push:
-    - main
+    branches:
+      - main
   schedule:
     - cron: '26 13 * * *'
 jobs:
