@@ -1,7 +1,7 @@
 name: Daily Scraping
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '5 * * * *'
 jobs:
   run-scrapers:
     runs-on: ubuntu-latest
@@ -21,4 +21,3 @@ jobs:
         run: |
           scrapy crawl infoworld
           scrapy crawl mozilladev
-
