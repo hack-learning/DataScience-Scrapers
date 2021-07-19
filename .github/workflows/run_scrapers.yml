@@ -4,7 +4,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '29 13 * * *'
+    - cron: '10 */2 * * *'
 jobs:
   run-scrapers:
     runs-on: ubuntu-latest
