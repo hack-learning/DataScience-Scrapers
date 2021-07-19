@@ -1,0 +1,23 @@
+name: Daily Scraping
+on:
+  schedule:
+    - cron: '5 * * * *'
+jobs:
+  run-scrapers:
+    runs-on: ubuntu-latest
+    env:
+      MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWD: ${{ secrets.MYSQL_PASSWD }}
+      MYSQL_DB: ${{ secrets.MYSQL_DB }}
+      MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Setup environment
+        run: |
+          pip install requirements.txt
+      - name: Run scrapers
+        run: |
+          scrapy crawl infoworld
+          scrapy crawl mozilladev
