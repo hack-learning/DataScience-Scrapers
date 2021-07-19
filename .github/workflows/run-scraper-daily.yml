@@ -19,6 +19,6 @@ jobs:
           pip install requirements.txt
       - name: Run scrapers
         run: |
-        scrapy crawl infoworld
-        scrapy crawl mozilladev
+          scrapy crawl infoworld
+          scrapy crawl mozilladev
 
