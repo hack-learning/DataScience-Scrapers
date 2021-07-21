@@ -7,7 +7,7 @@
 # useful for handling different item types with a single interface
 import mysql.connector
 from itemadapter import ItemAdapter
-from scrapy.exceptions import NotConfigured
+from scrapy.exceptions import NotConfigured, DropItem
 
 
 class NewsScraperPipeline:
@@ -16,75 +16,130 @@ class NewsScraperPipeline:
 
 
 class DataBasePipeline(object):
-    def __init__(self, db, user, passwd, host,port):
+    def __init__(self, db, user, passwd, host, port, table_queries):
         self.db = db
         self.user = user
         self.passwd = passwd
         self.host = host
         self.port = port
+        self.table_queries = table_queries
 
-    def process_item(self, item, spider):
-        
+    def process_item(self, item: dict, spider):
         if item.get('badge_url'):
-            
-            self.cursor.execute('CREATE TABLE IF NOT EXISTS courses (id INTEGER PRIMARY KEY AUTO_INCREMENT,title VARCHAR(100), \
-                                badge_url VARCHAR(255) UNIQUE, url VARCHAR(255), overview TEXT)')
-            sql = 'INSERT INTO courses(title, badge_url, url, overview) VALUES ("{title}", "{badge_url}", "{url}", "{overview}")'.format(**item)
+            sql = self._build_query(item)
         else:
-            
-            #domain_query
-            query_1 = "SELECT id FROM domains WHERE domain_name='"+spider.allowed_domains[0]+"'"            
-            self.cursor.execute(query_1)
-            id_domains = self.cursor.fetchall()
-            id_domain = id_domains[0][0]            
-            
-            #Insert scraped information to the tables
-            self.cursor.execute('CREATE TABLE IF NOT EXISTS \
-                articles (id INTEGER PRIMARY KEY AUTO_INCREMENT,\
-                id_domain INTEGER, FOREIGN KEY (id_domain) \
-                REFERENCES domains (id), title VARCHAR(100), overview TEXT,\
-                url VARCHAR(255) UNIQUE,\
-                image_url VARCHAR(255), body TEXT, pub_date DATE)')
-            sql = "INSERT INTO articles(\
-                id_domain, title, overview, url, image_url, body, pub_date) VALUES \
-                ({id_domain},'{title}', '{overview}', '{url}', '{image_url}', '{body}',\
-                 '{pub_date}')".format(**item, id_domain=id_domain)
+            item_title = item['title']
+            if item.get('url') in self.articles_urls:
+                raise DropItem(
+                    f'This article is already in the database: "{item_title}"'
+                )
+            elif not item.get('body'):
+                raise DropItem(
+                    f'This article does not have any body: "{item_title}"'
+                )
+
+            domain_name = spider.allowed_domains[0]
+            domain_query = f"SELECT id FROM domains WHERE domain_name='{domain_name}'"
+            self.cursor.execute(domain_query)
+            fetched_row = self.cursor.fetchone()
+            domain_id = fetched_row[0]
+
+            sql = self._build_query(item, domain_id)
+
         try:
-            
             self.cursor.execute(sql)
-            self.conn.commit()
-        except mysql.connector.IntegrityError as err:
+            self.connection.commit()
+        except mysql.connector.IntegrityError:
             print('Article already in the DataBase.')
         except Exception as e:
             print(e)
         return item
 
+    def _get_articles_urls(self):
+        """Get the stored articles urls from database before scraping."""
+        articles_urls_query = "SELECT a.url FROM articles AS a"
+        self.cursor.execute(articles_urls_query)
+        fetched_rows = self.cursor.fetchall()
+
+        articles_urls = []
+        for fetched_row in fetched_rows:
+            articles_urls.append(fetched_row[0])
+
+        return articles_urls
+
+    def _build_query(self, item: dict, domain_id: int = None) -> str:
+        """Build a query to save scraped items into the MySQL database."""
+        if not domain_id:
+            self.cursor.execute(self.table_queries['courses'])
+
+            course_insert_query = """
+                INSERT INTO courses(
+                    title,
+                    badge_url,
+                    url,
+                    overview
+                )
+                VALUES (
+                    '{title}',
+                    '{badge_url}',
+                    '{url}',
+                    '{overview}'
+                )"""
+            course_insert_query = course_insert_query.format(**item)
+
+            return course_insert_query
+        else:
+            self.cursor.execute(self.table_queries['articles'])
+
+            article_insert_query = """
+                INSERT INTO articles(
+                    id_domain,
+                    title,
+                    overview,
+                    url,
+                    image_url,
+                    body,
+                    pub_date
+                )
+                VALUES (
+                    '{domain_id}',
+                    '{title}',
+                    '{overview}',
+                    '{url}',
+                    '{image_url}',
+                    '{body}',
+                    '{pub_date}'
+                )"""
+            article_insert_query = article_insert_query.format(**item, domain_id=domain_id)
+
+            return article_insert_query
+
     def open_spider(self, spider):
-        self.conn = mysql.connector.connect(
+        self.connection = mysql.connector.connect(
                 db=self.db,
                 user=self.user,
                 host=self.host,
                 passwd=self.passwd,
-                charset='utf8',
+                charset='utf8mb4',
                 use_unicode=True,
                 port=self.port,
                 auth_plugin='mysql_native_password'
-                )
-        self.cursor = self.conn.cursor()
+            )
+        self.cursor = self.connection.cursor()
+        self.articles_urls = self._get_articles_urls()
         print('Connection succesfull')
 
     def close_spider(self, spider):
-        self.conn.close()
+        self.cursor.close()
+        self.connection.close()
 
     @classmethod
     def from_crawler(cls, crawler):
+        table_queries = crawler.settings.getdict('TABLE_QUERIES')
         db_settings = crawler.settings.getdict('DB_SETTINGS')
         if not db_settings:
-            raise NotConfigured
-        db = db_settings['db']
-        passwd = db_settings['passwd']
-        user = db_settings['user']
-        host = db_settings['host']
-        port = db_settings['port']
-        return cls(db, user, passwd, host,port)
+            raise NotConfigured(
+                'Make sure you are exporting the DataBase env variables.'
+            )
+        return cls(**db_settings, table_queries=table_queries)
 

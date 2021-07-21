@@ -11,7 +11,7 @@ class InfoworldSpider(scrapy.Spider):
     custom_settings = {
             'DEPTH_LIMIT': 5,
             'FEED_FORMAT': 'json',
-            'FEED_EXPORT_ENCODING': 'utf-8'
+            'FEED_EXPORT_ENCODING': 'utf-8',
             }
 
     def parse(self, response):

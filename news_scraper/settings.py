@@ -65,7 +65,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'news_scraper.pipelines.DataBasePipeline': 100,
-    'news_scraper.pipelines.NewsScraperPipeline': 300,
+    #'news_scraper.pipelines.NewsScraperPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -89,11 +89,33 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-# DataBase settings
+# Table queries
+TABLE_QUERIES = {
+    'courses': """CREATE TABLE IF NOT EXISTS courses (
+                    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    title VARCHAR(100),
+                    badge_url VARCHAR(255) UNIQUE,
+                    url VARCHAR(255),
+                    overview TEXT
+                )""",
+    'articles': """CREATE TABLE IF NOT EXISTS articles (
+                    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    id_domain INTEGER,
+                    FOREIGN KEY (id_domain) REFERENCES domains (id),
+                    title VARCHAR(100),
+                    overview TEXT,
+                    url VARCHAR(255) UNIQUE,
+                    image_url VARCHAR(255),
+                    body TEXT,
+                    pub_date DATE
+                )""",
+}
+
+# Database settings
 DB_SETTINGS = {
-        'host': os.getenv('MYSQL_HOST'),
-        'user': os.getenv('MYSQL_USER'),
-        'passwd': os.getenv('MYSQL_PASSWD'),
-        'db': os.getenv('MYSQL_DB'),
-        'port': os.getenv('MYSQL_PORT')
-        }
+    'host': os.getenv('MYSQL_HOST'),
+    'user': os.getenv('MYSQL_USER'),
+    'passwd': os.getenv('MYSQL_PASSWD'),
+    'db': os.getenv('MYSQL_DB'),
+    'port': os.getenv('MYSQL_PORT')
+}
