@@ -6,6 +6,7 @@
 
 # useful for handling different item types with a single interface
 import mysql.connector
+from mysql.connector.errors import Error
 from itemadapter import ItemAdapter
 from scrapy.exceptions import NotConfigured, DropItem
 
@@ -25,6 +26,9 @@ class DataBasePipeline(object):
         self.table_queries = table_queries
 
     def process_item(self, item: dict, spider):
+        if not self.connection:
+            return item
+
         if item.get('badge_url'):
             sql = self._build_query(item)
         else:
@@ -115,23 +119,27 @@ class DataBasePipeline(object):
             return article_insert_query
 
     def open_spider(self, spider):
-        self.connection = mysql.connector.connect(
-                db=self.db,
-                user=self.user,
-                host=self.host,
-                passwd=self.passwd,
-                charset='utf8mb4',
-                use_unicode=True,
-                port=self.port,
-                auth_plugin='mysql_native_password'
-            )
-        self.cursor = self.connection.cursor()
-        self.articles_urls = self._get_articles_urls()
-        print('Connection succesfull')
+        try:
+            self.connection = mysql.connector.connect(
+                    db=self.db,
+                    user=self.user,
+                    host=self.host,
+                    passwd=self.passwd,
+                    charset='utf8mb4',
+                    use_unicode=True,
+                    port=self.port,
+                    auth_plugin='mysql_native_password'
+                )
+            self.cursor = self.connection.cursor()
+            self.articles_urls = self._get_articles_urls()
+            print('Succesful Connection')
+        except Error as err:
+            print('There was an error trying to connect to the database: {err}'.format(err))
 
     def close_spider(self, spider):
-        self.cursor.close()
-        self.connection.close()
+        if self.connection:
+            self.cursor.close()
+            self.connection.close()
 
     @classmethod
     def from_crawler(cls, crawler):
