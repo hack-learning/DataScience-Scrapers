@@ -40,10 +40,10 @@ class InfoworldSpider(scrapy.Spider):
         body = ''.join(body)
         pub_date = response.xpath('//head/meta[@name="date"]/@content').get()
         yield {
-                'title': title,
-                'overview': overview,
-                'image_url': image_url,
-                'url': url,
-                'body': body,
-                'pub_date': pub_date
-                }
+            'title': title,
+            'overview': overview,
+            'image_url': image_url,
+            'url': url,
+            'body': body,
+            'pub_date': pub_date
+        }
