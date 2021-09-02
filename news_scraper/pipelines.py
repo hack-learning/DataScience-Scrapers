@@ -7,7 +7,7 @@
 # useful for handling different item types with a single interface
 import mysql.connector
 from mysql.connector.errors import Error
-from itemadapter import ItemAdapter
+from scrapy import Spider
 from scrapy.exceptions import NotConfigured, DropItem
 
 
@@ -118,7 +118,7 @@ class DataBasePipeline(object):
 
             return article_insert_query
 
-    def open_spider(self, spider):
+    def open_spider(self, spider: Spider):
         try:
             self.connection = mysql.connector.connect(
                     db=self.db,
@@ -134,7 +134,10 @@ class DataBasePipeline(object):
             self.articles_urls = self._get_articles_urls()
             print('Succesful Connection')
         except Error as err:
-            print('There was an error trying to connect to the database: {err}'.format(err))
+            self.connection = None
+            spider.logger.error(
+                f'An error occured while connecting to the database: {err}'
+            )
 
     def close_spider(self, spider):
         if self.connection:
